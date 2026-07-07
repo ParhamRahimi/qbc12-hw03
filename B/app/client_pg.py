@@ -1,0 +1,59 @@
+"""app.client_pg — Postgres read-only client (audit + source of truth)."""
+from __future__ import annotations
+
+from contextlib import contextmanager
+from typing import Iterator, List, Optional
+
+import psycopg
+from psycopg.rows import dict_row
+
+from . import config
+
+
+@contextmanager
+def _connect() -> Iterator[psycopg.Connection]:
+    conn = psycopg.connect(config.DATABASE_URL, connect_timeout=5, row_factory=dict_row)
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+
+def ping() -> bool:
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT 1")
+        return True
+    except Exception:
+        return False
+
+
+def fetch_corpus_hits(ids: List[str]) -> List[dict]:
+    if not ids:
+        return []
+    with _connect() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT id::text AS id, text, primary_label, labels, lang, source
+                FROM core.encoder_corpus
+                WHERE id = ANY(%s::uuid[])
+                """,
+                (ids,),
+            )
+            rows = cur.fetchall()
+    # Reorder to match input order
+    row_map = {r["id"]: r for r in rows}
+    return [row_map.get(uid, {}) for uid in ids]
+
+
+def count_corpus() -> Optional[int]:
+    try:
+        with _connect() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT count(*) FROM core.encoder_corpus")
+                row = cur.fetchone()
+                return row["count"] if row else None
+    except Exception:
+        return None

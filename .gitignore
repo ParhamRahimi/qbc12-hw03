@@ -3,10 +3,10 @@
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
+*.xlsx
+.DS_Store
 data/
 artifacts/
 mlruns/
-*.xlsx
-__pycache__/
 *.egg-info/
-.DS_Store
+.venv/

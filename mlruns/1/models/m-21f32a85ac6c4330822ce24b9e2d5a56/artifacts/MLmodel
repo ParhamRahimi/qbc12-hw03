@@ -1,0 +1,23 @@
+artifact_path: /Users/parhamrahimi/Documents/bluBank/Quera/HW2/B/mlruns/1/models/m-21f32a85ac6c4330822ce24b9e2d5a56/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.12.10
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: pickle
+    sklearn_version: 1.9.0
+    skops_trusted_types: null
+mlflow_version: 3.14.0
+model_id: m-21f32a85ac6c4330822ce24b9e2d5a56
+model_size_bytes: 7031
+model_uuid: m-21f32a85ac6c4330822ce24b9e2d5a56
+prompts: null
+run_id: 0a7a2d615c8e403f88265a181575541c
+utc_time_created: '2026-07-07 15:27:50.737572'

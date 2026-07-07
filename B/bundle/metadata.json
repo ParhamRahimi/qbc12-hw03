@@ -1,0 +1,11 @@
+{
+  "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+  "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "embedding_dim": 384,
+  "max_seq_len": 256,
+  "framework_version": "2.5.1",
+  "transformers_version": "4.47.0",
+  "built_by": "Parham Rahimi",
+  "build_timestamp_utc": "2026-07-07T17:15:16Z",
+  "bundle_version": "0.1.0"
+}

@@ -1,0 +1,12 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+data/
+artifacts/
+mlruns/
+*.xlsx
+__pycache__/
+*.egg-info/
+.DS_Store
