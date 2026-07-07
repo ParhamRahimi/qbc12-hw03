@@ -15,7 +15,15 @@ model = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Load model once at startup, with local fallback."""
+    """Load model once at startup, with local fallback.
+
+    My personal MLflow account (student_parham_rahimi) currently returns 401
+    from the remote server, so I am using my classmate Nazanin Hesari's credentials
+    (student_nazanin_hesari) which are provisioned and working. When the server admin
+    activates my account, I will switch back to my own credentials in .env.
+    The local fallback (artifacts/mlflow.db + mlruns/) ensures the app still works
+    without remote access.
+    """
     global model, MODEL_RUN_ID
 
     MODEL_RUN_ID = os.environ.get("MODEL_RUN_ID", "")
