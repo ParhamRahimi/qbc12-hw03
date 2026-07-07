@@ -15,7 +15,7 @@ class ListingFeatures(BaseModel):
     minimum_nights: int
     maximum_nights: int
     instant_bookable: bool
-    is_superhost: bool
+    host_is_superhost: bool
     host_listing_count: int
     total_reviews_before_cutoff: Optional[float] = None
     unique_reviewers_before_cutoff: Optional[float] = None
