@@ -15,7 +15,7 @@ class ListingFeatures(BaseModel):
     minimum_nights: int
     maximum_nights: int
     instant_bookable: bool
-    host_is_superhost: bool
+    is_superhost: bool
     host_listing_count: int
     total_reviews_before_cutoff: Optional[float] = None
     unique_reviewers_before_cutoff: Optional[float] = None
@@ -30,6 +30,7 @@ class ListingFeatures(BaseModel):
     available_rate_last_30d: float
     avg_minimum_nights_calendar_last_30d: Optional[float] = None
     avg_maximum_nights_calendar_last_30d: Optional[float] = None
+    future_available_rate_30d: Optional[float] = None
 
 
 class PredictionResponse(BaseModel):

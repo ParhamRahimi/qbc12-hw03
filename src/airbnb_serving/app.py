@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
     loaded = False
 
     # Try remote MLflow first
-    if username and password:
+    if username and password and MODEL_RUN_ID:
         os.environ["MLFLOW_TRACKING_USERNAME"] = username
         os.environ["MLFLOW_TRACKING_PASSWORD"] = password
         mlflow.set_tracking_uri(tracking_uri)
@@ -37,27 +37,42 @@ async def lifespan(app: FastAPI):
         except Exception as e:
             print(f"Remote MLflow failed: {e}")
 
-    # Fall back to local SQLite
+    # Fall back to local file store (mlruns/)
     if not loaded:
-        import os as _os
+        local_mlruns = "mlruns"
+        if os.path.exists(local_mlruns):
+            os.environ["MLFLOW_ALLOW_FILE_STORE"] = "true"
+            mlflow.set_tracking_uri(f"file://{os.path.abspath(local_mlruns)}")
+            try:
+                if MODEL_RUN_ID:
+                    model = mlflow.sklearn.load_model(f"runs:/{MODEL_RUN_ID}/model")
+                else:
+                    runs = mlflow.search_runs(order_by=["metrics.f1 DESC"], max_results=1)
+                    if len(runs) > 0:
+                        MODEL_RUN_ID = runs.iloc[0]["run_id"]
+                        model = mlflow.sklearn.load_model(f"runs:/{MODEL_RUN_ID}/model")
+                loaded = True
+                print(f"Model loaded from local mlruns, run {MODEL_RUN_ID}")
+            except Exception as e:
+                print(f"Local file store fallback failed: {e}")
+
+    # Fall back to local SQLite DB
+    if not loaded:
         local_db = "artifacts/mlflow.db"
-        if _os.path.exists(local_db):
+        if os.path.exists(local_db):
             mlflow.set_tracking_uri(f"sqlite:///{local_db}")
             try:
                 if MODEL_RUN_ID:
                     model = mlflow.sklearn.load_model(f"runs:/{MODEL_RUN_ID}/model")
                 else:
-                    runs = mlflow.search_runs(
-                        order_by=["metrics.f1 DESC"],
-                        max_results=1,
-                    )
+                    runs = mlflow.search_runs(order_by=["metrics.f1 DESC"], max_results=1)
                     if len(runs) > 0:
                         MODEL_RUN_ID = runs.iloc[0]["run_id"]
                         model = mlflow.sklearn.load_model(f"runs:/{MODEL_RUN_ID}/model")
                 loaded = True
                 print(f"Model loaded from local DB, run {MODEL_RUN_ID}")
             except Exception as e:
-                print(f"Local MLflow fallback failed: {e}")
+                print(f"Local DB fallback failed: {e}")
 
     if not loaded:
         print("WARNING: Model not loaded. Endpoints will return errors.")
