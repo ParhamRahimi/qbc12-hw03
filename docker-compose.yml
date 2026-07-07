@@ -1,4 +1,3 @@
-version: "3.9"
 services:
   airbnb-serving:
     image: qbc12-airbnb-serving:optimized
