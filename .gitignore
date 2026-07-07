@@ -7,3 +7,6 @@ data/
 artifacts/
 mlruns/
 *.xlsx
+__pycache__/
+*.egg-info/
+.DS_Store
