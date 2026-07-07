@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from typing import List
 
 import mlflow
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 
 from airbnb_serving.schema import ListingFeatures, PredictionResponse
 from airbnb_serving.predictor import predict_single, predict_batch
@@ -75,14 +75,20 @@ app = FastAPI(
 
 @app.get("/health")
 def health():
+    if model is None:
+        return {"status": "model_not_loaded", "model_run_id": MODEL_RUN_ID}
     return {"status": "ok", "model_run_id": MODEL_RUN_ID}
 
 
 @app.post("/predict", response_model=PredictionResponse)
 def predict(features: ListingFeatures):
+    if model is None:
+        raise HTTPException(status_code=503, detail="Model not loaded")
     return predict_single(features, model, MODEL_RUN_ID)
 
 
 @app.post("/predict/batch", response_model=List[PredictionResponse])
 def batch_predict(features_list: List[ListingFeatures]):
+    if model is None:
+        raise HTTPException(status_code=503, detail="Model not loaded")
     return predict_batch(features_list, model, MODEL_RUN_ID)
